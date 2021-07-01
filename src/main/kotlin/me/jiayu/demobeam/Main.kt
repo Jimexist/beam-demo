@@ -3,7 +3,10 @@ package me.jiayu.demobeam
 import org.apache.beam.sdk.Pipeline
 import org.apache.beam.sdk.io.TextIO
 import org.apache.beam.sdk.options.PipelineOptionsFactory
-import org.apache.beam.sdk.transforms.*
+import org.apache.beam.sdk.transforms.FlatMapElements
+import org.apache.beam.sdk.transforms.MapElements
+import org.apache.beam.sdk.transforms.ProcessFunction
+import org.apache.beam.sdk.transforms.ToString
 import org.apache.beam.sdk.values.TypeDescriptors
 
 object Application {
@@ -12,11 +15,9 @@ object Application {
         val p = Pipeline.create(options)
         val lines = p.apply("readFile", TextIO.read().from("/Users/jiayu_liu/Desktop/aggregate_test_100.csv"))
         val words = lines.apply(
-            "splitWords",
             FlatMapElements.into(TypeDescriptors.strings()).via(ProcessFunction { it.split(",") })
         )
         val wordLengths = words.apply(
-            "getLength",
             MapElements.into(TypeDescriptors.integers())
                 .via(ProcessFunction { it.length })
         )
